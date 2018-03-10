@@ -2,12 +2,14 @@ package com.example.georgioslamprakis.zboutsam.database.entities;
 
 import android.arch.persistence.room.ColumnInfo;
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.Index;
 import android.arch.persistence.room.PrimaryKey;
 
 /**
  * Created by georgioslamprakis on 10/03/2018.
  */
-@Entity
+@Entity(indices = {@Index(value = {"id", "title"},
+        unique = true)})
 public class Category {
 
     @PrimaryKey(autoGenerate = true)
