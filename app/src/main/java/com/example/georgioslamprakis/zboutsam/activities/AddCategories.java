@@ -2,6 +2,7 @@ package com.example.georgioslamprakis.zboutsam.activities;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -9,48 +10,73 @@ import android.widget.EditText;
 import android.widget.ListView;
 
 import com.example.georgioslamprakis.zboutsam.R;
+import com.example.georgioslamprakis.zboutsam.ZbtsmApp;
+import com.example.georgioslamprakis.zboutsam.database.daos.CategoryDao;
+import com.example.georgioslamprakis.zboutsam.database.entities.Category;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 public class AddCategories extends AppCompatActivity {
-
+//TODO:REFACTOR!!!!!!!!!!
     List<String> categories;
     EditText editText;
     Button button;
     ListView listView;
+    CategoryDao categoryDao;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        categoryDao = ZbtsmApp.get().getDB().categoryDao();
         setContentView(R.layout.activity_add_note);
-        categories = populateCategoriesListFromDB();
         editText = (EditText) findViewById(R.id.editTextAddCategory);
         button = (Button) findViewById(R.id.buttonAddCategory);
         listView = (ListView) findViewById(R.id.listViewCategory);
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, categories);
-        listView.setAdapter(arrayAdapter);
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new ArrayList<String>());
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.i("onCreate thread", "Populating the listview from db");
+
+                List<Category> categories = categoryDao.getAllCategories();
+                List<String> categoryTitles = new ArrayList<>();
+                for(Category category:categories){
+                    categoryTitles.add(category.getTitle());
+                }
+                arrayAdapter.addAll(categoryTitles);
+                listView.setAdapter(arrayAdapter);
+
+            }
+        }).start();
 
         button.setOnClickListener( new View.OnClickListener() {
             String newCategory;
             @Override
             public void onClick(View v) {
                 newCategory = editText.getText().toString();
+                if (!newCategory.equals("")){
+                    arrayAdapter.add(newCategory);
+                    insertItem(newCategory);
+                }
                 editText.setText("");
-                if (!newCategory.equals("")) arrayAdapter.add(newCategory);
-                insertItem(newCategory);
+
             }
         });
     }
 
-    private List<String> populateCategoriesListFromDB(){
-        //TODO:update from db
-        return new ArrayList<>(Arrays.asList("cat1", "cat2", "cat3"));
-    }
 
     private void insertItem(String categoryTitle){
-        //TODO: store category to db
+        final Category category = new Category();
+        category.setTitle(categoryTitle);
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.i("insertItem Thread", "I am in!!!!!!!!");
+                categoryDao.insert(category);
+            }
+        }).start();
     }
 
 }
