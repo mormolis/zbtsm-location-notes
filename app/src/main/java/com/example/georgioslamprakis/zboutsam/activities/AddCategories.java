@@ -32,7 +32,7 @@ public class AddCategories extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         categoryDao = ZbtsmApp.get().getDB().categoryDao();
-        setContentView(R.layout.activity_add_note);
+        setContentView(R.layout.activity_add_category);
         editText = (EditText) findViewById(R.id.editTextAddCategory);
         button = (Button) findViewById(R.id.buttonAddCategory);
         listView = (ListView) findViewById(R.id.listViewCategory);
