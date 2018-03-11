@@ -8,7 +8,7 @@ import android.arch.persistence.room.PrimaryKey;
 /**
  * Created by georgioslamprakis on 10/03/2018.
  */
-@Entity(indices = {@Index(value = {"id", "title"},
+@Entity(indices = {@Index(value = {"title"},
         unique = true)})
 public class Category {
 

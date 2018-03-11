@@ -1,4 +1,5 @@
 package com.example.georgioslamprakis.zboutsam.activities;
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -8,6 +9,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.Toast;
 
 import com.example.georgioslamprakis.zboutsam.R;
 import com.example.georgioslamprakis.zboutsam.ZbtsmApp;
@@ -24,6 +26,7 @@ public class AddCategories extends AppCompatActivity {
     Button button;
     ListView listView;
     CategoryDao categoryDao;
+    final List<String> titles =  new ArrayList<String>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -33,7 +36,8 @@ public class AddCategories extends AppCompatActivity {
         editText = (EditText) findViewById(R.id.editTextAddCategory);
         button = (Button) findViewById(R.id.buttonAddCategory);
         listView = (ListView) findViewById(R.id.listViewCategory);
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, new ArrayList<String>());
+
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, titles);
 
         new Thread(new Runnable() {
             @Override
@@ -56,9 +60,10 @@ public class AddCategories extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 newCategory = editText.getText().toString();
-                if (!newCategory.equals("")){
-                    arrayAdapter.add(newCategory);
+                if (!newCategory.equals("") && !titles.contains(newCategory)){
                     insertItem(newCategory);
+                } else {
+                    displayToastMessage(newCategory);
                 }
                 editText.setText("");
 
@@ -67,9 +72,10 @@ public class AddCategories extends AppCompatActivity {
     }
 
 
-    private void insertItem(String categoryTitle){
+    private void insertItem(final String categoryTitle){
         final Category category = new Category();
         category.setTitle(categoryTitle);
+        titles.add(categoryTitle);
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -77,6 +83,14 @@ public class AddCategories extends AppCompatActivity {
                 categoryDao.insert(category);
             }
         }).start();
+    }
+
+    private void displayToastMessage(String categoryTitle){
+        Context context = getApplicationContext();
+        CharSequence text;
+        text = categoryTitle.equals("") ? "you cannot give empty category" : categoryTitle+ " already exists!";
+        Toast toast = Toast.makeText(context, text, Toast.LENGTH_SHORT);
+        toast.show();
     }
 
 }
