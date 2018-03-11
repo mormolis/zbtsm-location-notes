@@ -14,21 +14,12 @@ import com.example.georgioslamprakis.zboutsam.database.entities.Note;
 /**
  * Created by georgioslamprakis on 10/03/2018.
  */
-@Database(entities = {Category.class, Note.class}, version = 1)
+@Database(entities = {Category.class, Note.class}, version = 2)
 public abstract class ZboutsamDB extends RoomDatabase {
     public abstract NoteDao noteDao();
     public abstract CategoryDao categoryDao();
 
-    public static final Migration MIGRATION_1_2 = new Migration(1, 2) {
-        @Override
-        public void migrate(SupportSQLiteDatabase database) {
-            database.execSQL("ALTER TABLE product "
-                    + " ADD COLUMN price INTEGER");
 
-            // enable flag to force update products
-            ZbtsmApp.get().setForceUpdate(true);
-        }
-    };
 
 }
 

@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class AddCategories extends AppCompatActivity {
-//TODO:REFACTOR!!!!!!!!!!
+    //TODO:REFACTOR!!!!!!!!!!
     List<String> categories;
     EditText editText;
     Button button;

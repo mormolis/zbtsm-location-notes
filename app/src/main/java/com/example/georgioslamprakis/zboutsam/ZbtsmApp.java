@@ -34,7 +34,6 @@ public class ZbtsmApp extends Application {
         Log.i("from application class", "IRHIXA BREEE!");
 
         database = Room.databaseBuilder(getApplicationContext(), ZboutsamDB.class, DATABASE_NAME)
-                .addMigrations(ZboutsamDB.MIGRATION_1_2)
                 .build();
 
         INSTANCE = this;
