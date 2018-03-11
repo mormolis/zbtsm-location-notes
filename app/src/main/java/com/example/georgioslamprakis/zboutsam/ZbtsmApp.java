@@ -7,6 +7,7 @@ import android.util.Log;
 
 import com.example.georgioslamprakis.zboutsam.database.ZboutsamDB;
 
+import com.example.georgioslamprakis.zboutsam.database.entities.Category;
 import com.example.georgioslamprakis.zboutsam.database.entities.Note;
 
 import java.util.List;
@@ -30,15 +31,11 @@ public class ZbtsmApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        // Required initialization logic here!
         Log.i("from application class", "IRHIXA BREEE!");
-
         database = Room.databaseBuilder(getApplicationContext(), ZboutsamDB.class, DATABASE_NAME)
                 .build();
-
+        createCategoryIfEmpty();
         INSTANCE = this;
-
-
     }
 
     public ZboutsamDB getDB() {
@@ -57,5 +54,18 @@ public class ZbtsmApp extends Application {
 
     private SharedPreferences getSP() {
         return getSharedPreferences(PREFERENCES, MODE_PRIVATE);
+    }
+
+    private void createCategoryIfEmpty(){
+        new Thread(new Runnable(){
+            @Override
+            public void run(){
+                if (database.categoryDao().getAllCategories().isEmpty()){
+                    Category defaultCategory = new Category();
+                    defaultCategory.setTitle("Uncategorised");
+                    database.categoryDao().insert(defaultCategory);
+                }
+            }
+        }).start();
     }
 }
