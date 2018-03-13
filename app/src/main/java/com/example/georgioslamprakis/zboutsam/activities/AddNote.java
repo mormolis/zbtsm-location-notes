@@ -47,13 +47,11 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
     @Override
     public void onBackPressed(){
         super.onBackPressed();
-
-                insertItem();
+        insertItem();
         new Thread(new Runnable() {
             @Override
             public void run() {
                 Log.i("on back pressed", noteDao.getAllNotes().toString());
-
             }
         }).start();
     }
@@ -79,6 +77,7 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
         textField = findViewById(R.id.editTextNote);
         title = titleTextField.getText().toString();
         text = textField.getText().toString();
+        //TODO:need to retrieve category
     }
 
     private void insertItem(){
@@ -86,25 +85,29 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
         final Note note = new Note();
         note.setTitle(title);
         note.setText(text);
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                if (category==null)
-                    note.setCategoryId(categoryDao.findIdByCategoryTitle("Uncategorised"));
-                else
-                    note.setCategoryId(categoryDao.findIdByCategoryTitle(category));
-                noteDao.insert(note);
+        //!note.getText().isEmpty() || !note.getTitle().isEmpty()
+        if (true){
+            new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    if (category==null){
+                        note.setCategoryId(categoryDao.findIdByCategoryTitle("Uncategorised"));
 
-            }
-        }).start();
+                    }
+                    else{
+                        note.setCategoryId(categoryDao.findIdByCategoryTitle(category));
+                    }
+                    noteDao.insert(note);
 
+                }
+            }).start();
+        }
     }
 
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
         category = adapterView.getItemAtPosition(i).toString();
-
         Toast.makeText(adapterView.getContext(), category, Toast.LENGTH_SHORT).show();
     }
 
