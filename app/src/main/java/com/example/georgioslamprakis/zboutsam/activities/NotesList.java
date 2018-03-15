@@ -13,6 +13,7 @@ import android.widget.ListView;
 
 import com.example.georgioslamprakis.zboutsam.R;
 import com.example.georgioslamprakis.zboutsam.ZbtsmApp;
+import com.example.georgioslamprakis.zboutsam.activities.adapters.NoteAdapter;
 import com.example.georgioslamprakis.zboutsam.database.daos.NoteDao;
 import com.example.georgioslamprakis.zboutsam.database.entities.Note;
 
@@ -30,8 +31,8 @@ public class NotesList extends AppCompatActivity {
     ZbtsmApp app;
     NoteDao noteDao;
     ListView listView;
-    List<Note> listNote;
-    ArrayAdapter<Note> arrayAdapter;
+    ArrayList<Note> listNote;
+    NoteAdapter arrayAdapter;
     ExecutorService executor = Executors.newFixedThreadPool(2);
 
     Callable<List<Note>> accessDb = new Callable<List<Note>>() {
@@ -60,8 +61,7 @@ public class NotesList extends AppCompatActivity {
         noteDao = app.getDB().noteDao();
         listView = findViewById(R.id.listViewNotes);
         listNote = new ArrayList<>();
-        //TODO:check the second argument
-        arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, listNote);
+        arrayAdapter = new NoteAdapter(this, listNote);
 
     }
 
