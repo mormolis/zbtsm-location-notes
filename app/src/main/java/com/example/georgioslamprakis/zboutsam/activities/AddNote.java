@@ -23,17 +23,17 @@ import java.util.List;
 
 public class AddNote extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
 //TODO: fix category spinner
-    final List<Category> categoryArray =  new ArrayList<>();
-    final List<String> spinnerArray =  new ArrayList<>();
-    ZbtsmApp app = ZbtsmApp.get();
-    NoteDao noteDao = app.getDB().noteDao();
-    CategoryDao categoryDao = app.get().getDB().categoryDao();
+    private final List<Category> categoryArray =  new ArrayList<>();
+    private final List<String> spinnerArray =  new ArrayList<>();
+    private ZbtsmApp app = ZbtsmApp.get();
+    private NoteDao noteDao = app.getDB().noteDao();
+    private CategoryDao categoryDao = app.get().getDB().categoryDao();
 
-    EditText titleTextField;
-    EditText textField;
-    String title;
-    String text;
-    String category;
+    private EditText titleTextField;
+    private EditText textField;
+    private String title;
+    private String text;
+    private String category;
 
 
     @Override

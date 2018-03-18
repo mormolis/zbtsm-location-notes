@@ -13,20 +13,30 @@ import com.example.georgioslamprakis.zboutsam.R;
 import com.example.georgioslamprakis.zboutsam.database.entities.Note;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by georgioslamprakis on 15/03/2018.
  */
 public class NoteAdapter extends ArrayAdapter<Note> {
 
-    Context context;
-    List<Note> noteList;
+    private Context context;
+    private List<Note> noteList;
+
+    private Map<Integer, Integer> positionToID;
 
     public NoteAdapter(@NonNull Context context,  ArrayList<Note> list) {
         super(context, 0 , list);
         this.context = context;
         this.noteList = list;
+        this.positionToID = new HashMap<>();
+    }
+
+
+    public Map<Integer, Integer> getPositionToID() {
+        return positionToID;
     }
 
     @NonNull
@@ -37,6 +47,8 @@ public class NoteAdapter extends ArrayAdapter<Note> {
             listItem = LayoutInflater.from(context).inflate(R.layout.notelist_item, parent,false);
 
         Note currentNote = noteList.get(position);
+
+        positionToID.put(position, currentNote.getId());
 
         TextView title = listItem.findViewById(R.id.textView_Title);
         title.setText(currentNote.getTitle());
