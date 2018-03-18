@@ -67,7 +67,7 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
         if (isNewNote){
             insertItem();
         } else {
-            updateNoteinDb();
+            updateNoteInDb();
         }
         new Thread(new Runnable() {
             @Override
@@ -101,7 +101,7 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
         //TODO:need to retrieve category
     }
 
-    private void updateNoteinDb(){
+    private void updateNoteInDb(){
         getAllFields();
         note.setText(text);
         note.setTitle(title);
@@ -114,8 +114,7 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
         getAllFields();
         newNote.setTitle(title);
         newNote.setText(text);
-        //!newNote.getText().isEmpty() || !newNote.getTitle().isEmpty()
-        if (true){
+        if (!newNote.getText().isEmpty() || !newNote.getTitle().isEmpty()){
             new Thread(new Runnable() {
                 @Override
                 public void run() {

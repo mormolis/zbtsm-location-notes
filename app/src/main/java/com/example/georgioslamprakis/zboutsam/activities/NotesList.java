@@ -75,8 +75,8 @@ public class NotesList extends AppCompatActivity {
 
                 Intent intent = new Intent(NotesList.this, AddNote.class);
                 Bundle b = new Bundle();
-                b.putInt("id", idClicked); //Your id
-                intent.putExtras(b); //Put your id to your next Intent
+                b.putInt("id", idClicked);
+                intent.putExtras(b);
                 startActivity(intent);
             }
         });
@@ -84,7 +84,6 @@ public class NotesList extends AppCompatActivity {
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                Log.i("*&^%$£$%^&^%$£@$%^&^%$£", "long clicked!");
                 positionToId = arrayAdapter.getPositionToID();
 
                 DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
@@ -92,14 +91,11 @@ public class NotesList extends AppCompatActivity {
                     public void onClick(DialogInterface dialog, int which) {
                         switch (which){
                             case DialogInterface.BUTTON_POSITIVE:
-                                Log.i("on popup", "clicked yes");
                                 AccessDB.deleteNote(positionToId.get(position));
                                 arrayAdapter.clear();
                                 arrayAdapter.addAll(AccessDB.returnAllNotes());
                                 break;
                             case DialogInterface.BUTTON_NEGATIVE:
-                                Log.i("on popup", "clicked no");
-                                //No button clicked
                                 break;
                         }
                     }
