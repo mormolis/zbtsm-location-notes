@@ -97,6 +97,16 @@ public class AccessDB {
         });
     }
 
+    public static void deleteNote(final int noteId){
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                noteDao.deleteById(noteId);
+            }
+        });
+    }
+
+
 
 
 }

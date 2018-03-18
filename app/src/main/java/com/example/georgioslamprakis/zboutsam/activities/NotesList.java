@@ -1,8 +1,10 @@
 package com.example.georgioslamprakis.zboutsam.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
@@ -14,6 +16,8 @@ import com.example.georgioslamprakis.zboutsam.ZbtsmApp;
 import com.example.georgioslamprakis.zboutsam.activities.adapters.NoteAdapter;
 import com.example.georgioslamprakis.zboutsam.database.daos.NoteDao;
 import com.example.georgioslamprakis.zboutsam.database.entities.Note;
+import com.example.georgioslamprakis.zboutsam.helpers.AccessDB;
+
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -40,8 +44,10 @@ public class NotesList extends AppCompatActivity {
         }
     };
 
+
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notes_list);
         Toolbar toolbar = findViewById(R.id.toolbar);
@@ -72,6 +78,39 @@ public class NotesList extends AppCompatActivity {
                 b.putInt("id", idClicked); //Your id
                 intent.putExtras(b); //Put your id to your next Intent
                 startActivity(intent);
+            }
+        });
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+                Log.i("*&^%$£$%^&^%$£@$%^&^%$£", "long clicked!");
+                positionToId = arrayAdapter.getPositionToID();
+
+                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which){
+                            case DialogInterface.BUTTON_POSITIVE:
+                                Log.i("on popup", "clicked yes");
+                                AccessDB.deleteNote(positionToId.get(position));
+                                arrayAdapter.clear();
+                                arrayAdapter.addAll(AccessDB.returnAllNotes());
+                                break;
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                Log.i("on popup", "clicked no");
+                                //No button clicked
+                                break;
+                        }
+                    }
+                };
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(NotesList.this);
+                builder.setMessage("Delete this note?").setPositiveButton("Yes", dialogClickListener)
+                        .setNegativeButton("No", dialogClickListener).show();
+
+
+                return true;
             }
         });
     }
