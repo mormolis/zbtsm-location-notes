@@ -3,39 +3,37 @@ package com.example.georgioslamprakis.zboutsam.activities;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
-import android.widget.ArrayAdapter;
+import android.widget.AdapterView;
 import android.widget.ListView;
-
 import com.example.georgioslamprakis.zboutsam.R;
 import com.example.georgioslamprakis.zboutsam.ZbtsmApp;
 import com.example.georgioslamprakis.zboutsam.activities.adapters.NoteAdapter;
 import com.example.georgioslamprakis.zboutsam.database.daos.NoteDao;
 import com.example.georgioslamprakis.zboutsam.database.entities.Note;
-
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executor;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class NotesList extends AppCompatActivity {
 
-    ZbtsmApp app;
-    NoteDao noteDao;
-    ListView listView;
-    ArrayList<Note> listNote;
-    NoteAdapter arrayAdapter;
-    ExecutorService executor = Executors.newFixedThreadPool(2);
+    private ZbtsmApp app;
+    private NoteDao noteDao;
+    private ListView listView;
+    private ArrayList<Note> listNote;
+    private NoteAdapter arrayAdapter;
+    private Map<Integer, Integer> positionToId;
+    private ExecutorService executor = Executors.newFixedThreadPool(2);
 
-    Callable<List<Note>> accessDb = new Callable<List<Note>>() {
+    private Callable<List<Note>> accessDb = new Callable<List<Note>>() {
         @Override
         public List<Note> call() {
             return noteDao.getAllNotes();
@@ -46,16 +44,8 @@ public class NotesList extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_notes_list);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                trigerActivity(AddNote.class);
-            }
-        });
 
         app = ZbtsmApp.get();
         noteDao = app.getDB().noteDao();
@@ -63,6 +53,27 @@ public class NotesList extends AppCompatActivity {
         listNote = new ArrayList<>();
         arrayAdapter = new NoteAdapter(this, listNote);
 
+        FloatingActionButton fab = findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                trigerActivity(AddNote.class);
+            }
+        });
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                positionToId = arrayAdapter.getPositionToID();
+                int idClicked = positionToId.get(position);
+
+                Intent intent = new Intent(NotesList.this, AddNote.class);
+                Bundle b = new Bundle();
+                b.putInt("id", idClicked); //Your id
+                intent.putExtras(b); //Put your id to your next Intent
+                startActivity(intent);
+            }
+        });
     }
 
 

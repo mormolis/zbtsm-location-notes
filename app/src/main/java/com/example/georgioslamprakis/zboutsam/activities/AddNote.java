@@ -17,6 +17,7 @@ import com.example.georgioslamprakis.zboutsam.database.daos.CategoryDao;
 import com.example.georgioslamprakis.zboutsam.database.daos.NoteDao;
 import com.example.georgioslamprakis.zboutsam.database.entities.Category;
 import com.example.georgioslamprakis.zboutsam.database.entities.Note;
+import com.example.georgioslamprakis.zboutsam.helpers.AccessDB;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -34,6 +35,9 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
     private String title;
     private String text;
     private String category;
+    private Note note;
+
+    private boolean isNewNote = true;
 
 
     @Override
@@ -42,12 +46,29 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
         setContentView(R.layout.activity_add_note);
         populateSpinner();
 
+        Bundle b = getIntent().getExtras();
+        int value = -1; // or other values
+        if(b != null){
+            value = b.getInt("id");
+        }
+        if(AccessDB.isIdInDb(value)){
+            note = AccessDB.returnNoteByID(value);
+            getAllFields();
+            titleTextField.setText(note.getTitle());
+            textField.setText(note.getText());
+            isNewNote = false;
+        }
+        Log.i("check-value-passed", Integer.toString(value));
     }
 
     @Override
     public void onBackPressed(){
         super.onBackPressed();
-        insertItem();
+        if (isNewNote){
+            insertItem();
+        } else {
+            updateNoteinDb();
+        }
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -66,7 +87,7 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
             }
         }).start();
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, spinnerArray);
-        Spinner spinner = (Spinner) findViewById(R.id.spinnerCategory);
+        Spinner spinner = findViewById(R.id.spinnerCategory);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
@@ -80,30 +101,37 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
         //TODO:need to retrieve category
     }
 
-    private void insertItem(){
+    private void updateNoteinDb(){
         getAllFields();
-        final Note note = new Note();
-        note.setTitle(title);
         note.setText(text);
-        //!note.getText().isEmpty() || !note.getTitle().isEmpty()
+        note.setTitle(title);
+        AccessDB.updateNote(note);
+    }
+
+
+    private void insertItem(){
+        final Note newNote = new Note();
+        getAllFields();
+        newNote.setTitle(title);
+        newNote.setText(text);
+        //!newNote.getText().isEmpty() || !newNote.getTitle().isEmpty()
         if (true){
             new Thread(new Runnable() {
                 @Override
                 public void run() {
                     if (category==null){
-                        note.setCategoryId(categoryDao.findIdByCategoryTitle("Uncategorised"));
+                        newNote.setCategoryId(categoryDao.findIdByCategoryTitle("Uncategorised"));
 
                     }
                     else{
-                        note.setCategoryId(categoryDao.findIdByCategoryTitle(category));
+                        newNote.setCategoryId(categoryDao.findIdByCategoryTitle(category));
                     }
-                    noteDao.insert(note);
+                    noteDao.insert(newNote);
 
                 }
             }).start();
         }
     }
-
 
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -113,7 +141,7 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
 
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {
-        Toast.makeText(adapterView.getContext(), "heloo", Toast.LENGTH_SHORT).show();
+        Toast.makeText(adapterView.getContext(), "helloo", Toast.LENGTH_SHORT).show();
 
     }
 }

@@ -30,5 +30,12 @@ public interface NoteDao {
 
     @Query("SELECT * FROM note WHERE categoryId=:categoryId")
     List<Note> findNotesFromCategoryId(final int categoryId);
+
+    @Query("SELECT * FROM note WHERE id=:id")
+    Note getNoteById(final int id);
+
+    @Query("SELECT COUNT(id) FROM note WHERE id = :id")
+    int isOneOrZero(final int id);
+
 }
 
