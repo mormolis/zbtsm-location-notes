@@ -60,6 +60,10 @@ public class Note {
         this.text = text;
     }
 
+    public String getSummary(){
+        return text.length() > 50 ? text.substring(0, 49) + " ..." : text;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
