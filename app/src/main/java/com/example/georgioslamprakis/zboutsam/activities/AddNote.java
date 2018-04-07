@@ -27,8 +27,6 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class AddNote extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
-//TODO: fix category spinner
-    private final List<Category> categoryArray =  new ArrayList<>();
     private final List<String> spinnerArray =  new ArrayList<>();
     private ZbtsmApp app = ZbtsmApp.get();
     private NoteDao noteDao = app.getDB().noteDao();
@@ -100,7 +98,7 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
             for (Category category:updatedNoteList)
                 spinnerArray.add(category.getTitle());
         } catch (Exception e){
-            Log.e("onSpinnerPuppulation", e.toString());
+            Log.e("populatingSpinner", e.toString());
         }
 
 

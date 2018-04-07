@@ -125,6 +125,23 @@ public class AccessDB {
         return id;
     }
 
+    public static String findCategoryTitleById(final int categoryId){
+        String categoryTitle = "Uncategorised";
+        Callable<String> callable = new Callable<String>() {
+            @Override
+            public String call() throws Exception {
+                 return categoryDao.findCategoryFromId(categoryId).get(0).getTitle();
+            }
+        };
+        Future<String> future = executor.submit(callable);
+        try{
+            categoryTitle = future.get();
+        }catch(Exception e){
+            Log.e("AccessingDB", "Getting Category from id" + e.toString());
+        }
+        return categoryTitle;
+    }
+
 
 
 

@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.example.georgioslamprakis.zboutsam.R;
 import com.example.georgioslamprakis.zboutsam.database.entities.Note;
+import com.example.georgioslamprakis.zboutsam.helpers.AccessDB;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,7 +59,8 @@ public class NoteAdapter extends ArrayAdapter<Note> {
         text.setText(currentNote.getSummary());
 
         TextView category = listItem.findViewById(R.id.textView_category);
-        category.setText(Integer.toString(currentNote.getCategoryId()));
+
+        category.setText(AccessDB.findCategoryTitleById(currentNote.getCategoryId()));
 
         return listItem;
     }

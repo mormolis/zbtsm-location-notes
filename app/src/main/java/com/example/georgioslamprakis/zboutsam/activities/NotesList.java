@@ -28,7 +28,7 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
 public class NotesList extends AppCompatActivity {
-
+//TODO: move database procedures to helper method
     private ZbtsmApp app;
     private NoteDao noteDao;
     private ListView listView;
@@ -37,7 +37,7 @@ public class NotesList extends AppCompatActivity {
     private Map<Integer, Integer> positionToId;
     private ExecutorService executor = Executors.newFixedThreadPool(2);
 
-    private Callable<List<Note>> accessDb = new Callable<List<Note>>() {
+    private Callable<List<Note>> retrievedNotes = new Callable<List<Note>>() {
         @Override
         public List<Note> call() {
             return noteDao.getAllNotes();
@@ -115,7 +115,7 @@ public class NotesList extends AppCompatActivity {
     @Override
     protected void onResume(){
         super.onResume();
-        Future<List<Note>> futureListPopulatedFromDB = executor.submit(accessDb);
+        Future<List<Note>> futureListPopulatedFromDB = executor.submit(retrievedNotes);
         List<Note> updatedNoteList ;
         try{
           updatedNoteList = futureListPopulatedFromDB.get();
