@@ -36,4 +36,5 @@ public interface CategoryDao {
     @Query("SELECT id FROM category WHERE title=:title")
     int findIdByCategoryTitle(String title);
 
+
 }

@@ -3,6 +3,7 @@ package com.example.georgioslamprakis.zboutsam.helpers;
 import android.util.Log;
 
 import com.example.georgioslamprakis.zboutsam.ZbtsmApp;
+import com.example.georgioslamprakis.zboutsam.database.daos.CategoryDao;
 import com.example.georgioslamprakis.zboutsam.database.daos.NoteDao;
 import com.example.georgioslamprakis.zboutsam.database.entities.Note;
 
@@ -21,7 +22,8 @@ public class AccessDB {
 
     private static ZbtsmApp app = ZbtsmApp.get();
     private static NoteDao noteDao = app.getDB().noteDao();
-    private static ExecutorService executor = Executors.newFixedThreadPool(5);
+    private static CategoryDao categoryDao = app.getDB().categoryDao();
+    private static ExecutorService executor = Executors.newFixedThreadPool(2);
 
     public static List<Note> returnAllNotes(){
         Callable<List<Note>> getAllNotesFromDb = new Callable<List<Note>>() {
@@ -104,6 +106,23 @@ public class AccessDB {
                 noteDao.deleteById(noteId);
             }
         });
+    }
+
+    public static int findCategoryIdByCategoryTitle(final String title){
+        int id = -1;
+        Callable<Integer> callable = new Callable<Integer>() {
+            @Override
+            public Integer call() throws Exception {
+                return categoryDao.findIdByCategoryTitle(title);
+            }
+        };
+        Future<Integer> future = executor.submit(callable);
+        try{
+            id = future.get();
+        }catch(Exception e){
+            Log.e("AccessingDB", e.toString());
+        }
+        return id;
     }
 
 

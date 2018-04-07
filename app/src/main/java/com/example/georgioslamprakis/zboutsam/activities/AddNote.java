@@ -21,6 +21,10 @@ import com.example.georgioslamprakis.zboutsam.helpers.AccessDB;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 public class AddNote extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
 //TODO: fix category spinner
@@ -36,8 +40,12 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
     private String text;
     private String category;
     private Note note;
+    private Spinner spinner;
 
     private boolean isNewNote = true;
+
+    private final ExecutorService executor = Executors.newFixedThreadPool(2);
+
 
 
     @Override
@@ -78,16 +86,27 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
     }
 
     private void populateSpinner(){
-        new Thread(new Runnable(){
+        Callable<List<Category>> getAllCategoriesFromDB = new Callable<List<Category>>() {
             @Override
-            public void run(){
-                categoryArray.addAll(categoryDao.getAllCategories());
-                for (Category category:categoryArray)
-                    spinnerArray.add(category.getTitle());
+            public List<Category> call(){
+                return categoryDao.getAllCategories();
             }
-        }).start();
+        };
+
+        Future<List<Category>> futureListPopulatedFromDB = executor.submit(getAllCategoriesFromDB);
+
+        try{
+            List<Category> updatedNoteList = futureListPopulatedFromDB.get();
+            for (Category category:updatedNoteList)
+                spinnerArray.add(category.getTitle());
+        } catch (Exception e){
+            Log.e("onSpinnerPuppulation", e.toString());
+        }
+
+
+
         ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, spinnerArray);
-        Spinner spinner = findViewById(R.id.spinnerCategory);
+        spinner = findViewById(R.id.spinnerCategory);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinner.setAdapter(adapter);
         spinner.setOnItemSelectedListener(this);
@@ -98,13 +117,18 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
         textField = findViewById(R.id.editTextNote);
         title = titleTextField.getText().toString();
         text = textField.getText().toString();
-        //TODO:need to retrieve category
+        spinner = findViewById(R.id.spinnerCategory);
+        category = spinner.getSelectedItem().toString();
     }
 
     private void updateNoteInDb(){
         getAllFields();
         note.setText(text);
         note.setTitle(title);
+        int categoryId = AccessDB.findCategoryIdByCategoryTitle(category);
+        if (categoryId != -1){
+            note.setCategoryId(categoryId);
+        }
         AccessDB.updateNote(note);
     }
 

@@ -25,6 +25,7 @@ public class NoteAdapter extends ArrayAdapter<Note> {
     private Context context;
     private List<Note> noteList;
 
+
     private Map<Integer, Integer> positionToID;
 
     public NoteAdapter(@NonNull Context context,  ArrayList<Note> list) {
