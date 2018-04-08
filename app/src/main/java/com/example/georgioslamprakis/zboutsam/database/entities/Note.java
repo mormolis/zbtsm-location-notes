@@ -5,6 +5,8 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.ForeignKey;
 import android.arch.persistence.room.PrimaryKey;
 
+import com.example.georgioslamprakis.zboutsam.database.entities.helpers.ZbtsmLocation;
+
 import static android.arch.persistence.room.ForeignKey.CASCADE;
 
 /**
@@ -27,6 +29,17 @@ public class Note {
 
     @ColumnInfo(name = "text")
     private String text;
+
+    @ColumnInfo(name = "zbtsmLocation")
+    private ZbtsmLocation zbtsmLocation;
+
+    public ZbtsmLocation getZbtsmLocation() {
+        return zbtsmLocation;
+    }
+
+    public void setZbtsmLocation(ZbtsmLocation zbtsmLocation) {
+        this.zbtsmLocation = zbtsmLocation;
+    }
 
     public int getId() {
         return id;
@@ -69,12 +82,13 @@ public class Note {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
 
-        Note that = (Note) o;
+        Note note = (Note) o;
 
-        if (id != that.id) return false;
-        if (categoryId != that.categoryId) return false;
-        if (title != null ? !title.equals(that.title) : that.title != null) return false;
-        return text != null ? text.equals(that.text) : that.text == null;
+        if (id != note.id) return false;
+        if (categoryId != note.categoryId) return false;
+        if (title != null ? !title.equals(note.title) : note.title != null) return false;
+        if (text != null ? !text.equals(note.text) : note.text != null) return false;
+        return zbtsmLocation != null ? zbtsmLocation.equals(note.zbtsmLocation) : note.zbtsmLocation == null;
     }
 
     @Override
@@ -83,6 +97,7 @@ public class Note {
         result = 31 * result + categoryId;
         result = 31 * result + (title != null ? title.hashCode() : 0);
         result = 31 * result + (text != null ? text.hashCode() : 0);
+        result = 31 * result + (zbtsmLocation != null ? zbtsmLocation.hashCode() : 0);
         return result;
     }
 
@@ -93,6 +108,7 @@ public class Note {
                 ", categoryId=" + categoryId +
                 ", title='" + title + '\'' +
                 ", text='" + text + '\'' +
+                ", zbtsmLocation=" + zbtsmLocation +
                 '}';
     }
 }

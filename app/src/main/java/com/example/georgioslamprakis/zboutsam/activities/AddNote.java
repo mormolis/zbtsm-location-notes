@@ -1,8 +1,19 @@
 package com.example.georgioslamprakis.zboutsam.activities;
 
+import android.Manifest;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.location.Location;
+import android.location.LocationManager;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -26,8 +37,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 
-public class AddNote extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
-    private final List<String> spinnerArray =  new ArrayList<>();
+public class AddNote extends AppCompatActivity implements AdapterView.OnItemSelectedListener {
+    private final List<String> spinnerArray = new ArrayList<>();
     private ZbtsmApp app = ZbtsmApp.get();
     private NoteDao noteDao = app.getDB().noteDao();
     private CategoryDao categoryDao = app.get().getDB().categoryDao();
@@ -46,7 +57,6 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
     private final ExecutorService executor = Executors.newFixedThreadPool(2);
 
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,10 +65,10 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
 
         Bundle b = getIntent().getExtras();
         int value = -1; // or other values
-        if(b != null){
+        if (b != null) {
             value = b.getInt("id");
         }
-        if(AccessDB.isNoteIdInDb(value)){
+        if (AccessDB.isNoteIdInDb(value)) {
             note = AccessDB.returnNoteByID(value);
             getAllFields();
             titleTextField.setText(note.getTitle());
@@ -70,9 +80,9 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
     }
 
     @Override
-    public void onBackPressed(){
+    public void onBackPressed() {
         super.onBackPressed();
-        if (isNewNote){
+        if (isNewNote) {
             insertItem();
         } else {
             updateNoteInDb();
@@ -85,21 +95,21 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
         }).start();
     }
 
-    private void populateSpinner(){
+    private void populateSpinner() {
         Callable<List<Category>> getAllCategoriesFromDB = new Callable<List<Category>>() {
             @Override
-            public List<Category> call(){
+            public List<Category> call() {
                 return categoryDao.getAllCategories();
             }
         };
 
         Future<List<Category>> futureListPopulatedFromDB = executor.submit(getAllCategoriesFromDB);
 
-        try{
+        try {
             List<Category> updatedNoteList = futureListPopulatedFromDB.get();
-            for (Category category:updatedNoteList)
+            for (Category category : updatedNoteList)
                 spinnerArray.add(category.getTitle());
-        } catch (Exception e){
+        } catch (Exception e) {
             Log.e("populatingSpinner", e.toString());
         }
 
@@ -110,7 +120,7 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
         spinner.setOnItemSelectedListener(this);
     }
 
-    private void getAllFields(){
+    private void getAllFields() {
         titleTextField = findViewById(R.id.editTextTitle);
         textField = findViewById(R.id.editTextNote);
         title = titleTextField.getText().toString();
@@ -119,32 +129,31 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
         category = spinner.getSelectedItem().toString();
     }
 
-    private void updateNoteInDb(){
+    private void updateNoteInDb() {
         getAllFields();
         note.setText(text);
         note.setTitle(title);
         int categoryId = AccessDB.findCategoryIdByCategoryTitle(category);
-        if (categoryId != -1){
+        if (categoryId != -1) {
             note.setCategoryId(categoryId);
         }
         AccessDB.updateNote(note);
     }
 
 
-    private void insertItem(){
+    private void insertItem() {
         final Note newNote = new Note();
         getAllFields();
         newNote.setTitle(title);
         newNote.setText(text);
-        if (!newNote.getText().isEmpty() || !newNote.getTitle().isEmpty()){
+        if (!newNote.getText().isEmpty() || !newNote.getTitle().isEmpty()) {
             new Thread(new Runnable() {
                 @Override
                 public void run() {
-                    if (category==null){
+                    if (category == null) {
                         newNote.setCategoryId(categoryDao.findIdByCategoryTitle("Uncategorised"));
 
-                    }
-                    else{
+                    } else {
                         newNote.setCategoryId(categoryDao.findIdByCategoryTitle(category));
                     }
                     noteDao.insert(newNote);
@@ -166,4 +175,31 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
         Toast.makeText(adapterView.getContext(), "helloo", Toast.LENGTH_SHORT).show();
 
     }
+
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater menuInflater = getMenuInflater();
+        menuInflater.inflate(R.menu.note_menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        Intent intent;
+        switch (item.getItemId()) {
+            case R.id.addLocationMenu:
+//                addCurrentLocationToTheDbIfItDoesntExists
+                return true;
+            case R.id.showOnMapMenu:
+//                intent = new Intent(this, AddCategories.class);
+//                startActivity(intent);
+                // create a map activity pointing to the location of the note if it has one
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+
+        }
+    }
+
 }
