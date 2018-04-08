@@ -3,7 +3,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v7.app.AlertDialog;
-import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
@@ -24,8 +23,7 @@ import com.example.georgioslamprakis.zboutsam.helpers.AccessDB;
 import java.util.ArrayList;
 import java.util.List;
 
-public class AddCategories extends AppCompatActivity {
-    List<String> categories;
+public class AddCategories extends ZbtsmActivity {
     EditText editText;
     Button button;
     ListView listView;
