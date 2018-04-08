@@ -39,6 +39,7 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
     private String category;
     private Note note;
     private Spinner spinner;
+    private ArrayAdapter<String> spinnerAdapter;
 
     private boolean isNewNote = true;
 
@@ -57,11 +58,12 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
         if(b != null){
             value = b.getInt("id");
         }
-        if(AccessDB.isIdInDb(value)){
+        if(AccessDB.isNoteIdInDb(value)){
             note = AccessDB.returnNoteByID(value);
             getAllFields();
             titleTextField.setText(note.getTitle());
             textField.setText(note.getText());
+            spinner.setSelection(spinnerAdapter.getPosition(AccessDB.findCategoryTitleById(note.getCategoryId())));
             isNewNote = false;
         }
         Log.i("check-value-passed", Integer.toString(value));
@@ -101,12 +103,10 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
             Log.e("populatingSpinner", e.toString());
         }
 
-
-
-        ArrayAdapter<String> adapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, spinnerArray);
+        spinnerAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, spinnerArray);
         spinner = findViewById(R.id.spinnerCategory);
-        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-        spinner.setAdapter(adapter);
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        spinner.setAdapter(spinnerAdapter);
         spinner.setOnItemSelectedListener(this);
     }
 
@@ -159,6 +159,7 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
         category = adapterView.getItemAtPosition(i).toString();
         Toast.makeText(adapterView.getContext(), category, Toast.LENGTH_SHORT).show();
     }
+
 
     @Override
     public void onNothingSelected(AdapterView<?> adapterView) {

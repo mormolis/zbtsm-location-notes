@@ -40,7 +40,19 @@ public class NotesList extends AppCompatActivity {
     private Callable<List<Note>> retrievedNotes = new Callable<List<Note>>() {
         @Override
         public List<Note> call() {
-            return noteDao.getAllNotes();
+
+            Bundle b = getIntent().getExtras();
+            int value = -1; // or other values
+            if(b != null){
+                value = b.getInt("id");
+            }
+            if(value == -1){
+                return noteDao.getAllNotes();
+            } else {
+                return noteDao.findNotesFromCategoryId(value);
+            }
+
+
         }
     };
 

@@ -1,10 +1,12 @@
 package com.example.georgioslamprakis.zboutsam.activities;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
@@ -15,6 +17,7 @@ import com.example.georgioslamprakis.zboutsam.R;
 import com.example.georgioslamprakis.zboutsam.ZbtsmApp;
 import com.example.georgioslamprakis.zboutsam.database.daos.CategoryDao;
 import com.example.georgioslamprakis.zboutsam.database.entities.Category;
+import com.example.georgioslamprakis.zboutsam.helpers.AccessDB;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,11 +35,11 @@ public class AddCategories extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         categoryDao = ZbtsmApp.get().getDB().categoryDao();
         setContentView(R.layout.activity_add_category);
-        editText = (EditText) findViewById(R.id.editTextAddCategory);
-        button = (Button) findViewById(R.id.buttonAddCategory);
-        listView = (ListView) findViewById(R.id.listViewCategory);
+        editText = findViewById(R.id.editTextAddCategory);
+        button = findViewById(R.id.buttonAddCategory);
+        listView = findViewById(R.id.listViewCategory);
 
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, titles);
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, titles);
 
         new Thread(new Runnable() {
             @Override
@@ -53,6 +56,24 @@ public class AddCategories extends AppCompatActivity {
 
             }
         }).start();
+
+        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+
+                String categoryTitleSelectedFromList = listView.getItemAtPosition(position).toString();
+
+
+
+
+                Intent intent = new Intent(AddCategories.this, NotesList.class);
+                Bundle b = new Bundle();
+
+                b.putInt("id", AccessDB.findCategoryIdByCategoryTitle(categoryTitleSelectedFromList));
+                intent.putExtras(b);
+                startActivity(intent);
+            }
+        });
 
         button.setOnClickListener( new View.OnClickListener() {
             String newCategory;

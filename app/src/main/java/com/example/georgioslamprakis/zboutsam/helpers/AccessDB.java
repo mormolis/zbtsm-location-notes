@@ -69,7 +69,7 @@ public class AccessDB {
          return null;
     }
 
-    public static boolean isIdInDb(final int id){
+    public static boolean isNoteIdInDb(final int id){
         Callable<Integer> countIdsFromDb = new Callable<Integer>() {
             @Override
             public Integer call() throws Exception {
