@@ -1,6 +1,8 @@
 package com.example.georgioslamprakis.zboutsam.activities;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 
 import android.os.Bundle;
@@ -28,43 +30,56 @@ public class AddCategories extends AppCompatActivity {
     Button button;
     ListView listView;
     CategoryDao categoryDao;
-    final List<String> titles =  new ArrayList<String>();
+    final List<String> titles =  new ArrayList<>();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, titles);;
+
         categoryDao = ZbtsmApp.get().getDB().categoryDao();
         setContentView(R.layout.activity_add_category);
         editText = findViewById(R.id.editTextAddCategory);
         button = findViewById(R.id.buttonAddCategory);
         listView = findViewById(R.id.listViewCategory);
 
-        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, titles);
 
-        new Thread(new Runnable() {
+        arrayAdapter.addAll(AccessDB.getAllCategories());
+        listView.setAdapter(arrayAdapter);
+
+
+        listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
-            public void run() {
-                Log.i("onCreate thread", "Populating the listview from db");
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
 
-                List<Category> categories = categoryDao.getAllCategories();
-                List<String> categoryTitles = new ArrayList<>();
-                for(Category category:categories){
-                    categoryTitles.add(category.getTitle());
-                }
-                arrayAdapter.addAll(categoryTitles);
-                listView.setAdapter(arrayAdapter);
 
+                DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        switch (which){
+                            case DialogInterface.BUTTON_POSITIVE:
+                                AccessDB.deleteCategoryByTitle(arrayAdapter.getItem(position));
+                                arrayAdapter.clear();
+                                arrayAdapter.addAll(AccessDB.getAllCategories());
+                                break;
+                            case DialogInterface.BUTTON_NEGATIVE:
+                                break;
+                        }
+                    }
+                };
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(AddCategories.this);
+                builder.setMessage("Delete this category? All Notes assosiated with this category will be removed as well.").setPositiveButton("Yes", dialogClickListener)
+                        .setNegativeButton("No", dialogClickListener).show();
+
+                return true;
             }
-        }).start();
+        });
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-
                 String categoryTitleSelectedFromList = listView.getItemAtPosition(position).toString();
-
-
-
 
                 Intent intent = new Intent(AddCategories.this, NotesList.class);
                 Bundle b = new Bundle();

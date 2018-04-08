@@ -33,7 +33,7 @@ public class NotesList extends AppCompatActivity {
     private NoteDao noteDao;
     private ListView listView;
     private ArrayList<Note> listNote;
-    private NoteAdapter arrayAdapter;
+    private NoteAdapter noteAdapter;
     private Map<Integer, Integer> positionToId;
     private ExecutorService executor = Executors.newFixedThreadPool(2);
 
@@ -51,8 +51,6 @@ public class NotesList extends AppCompatActivity {
             } else {
                 return noteDao.findNotesFromCategoryId(value);
             }
-
-
         }
     };
 
@@ -69,7 +67,7 @@ public class NotesList extends AppCompatActivity {
         noteDao = app.getDB().noteDao();
         listView = findViewById(R.id.listViewNotes);
         listNote = new ArrayList<>();
-        arrayAdapter = new NoteAdapter(this, listNote);
+        noteAdapter = new NoteAdapter(this, listNote);
 
         FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
@@ -82,7 +80,7 @@ public class NotesList extends AppCompatActivity {
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                positionToId = arrayAdapter.getPositionToID();
+                positionToId = noteAdapter.getPositionToID();
                 int idClicked = positionToId.get(position);
 
                 Intent intent = new Intent(NotesList.this, AddNote.class);
@@ -96,7 +94,7 @@ public class NotesList extends AppCompatActivity {
         listView.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
             @Override
             public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
-                positionToId = arrayAdapter.getPositionToID();
+                positionToId = noteAdapter.getPositionToID();
 
                 DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
                     @Override
@@ -104,8 +102,8 @@ public class NotesList extends AppCompatActivity {
                         switch (which){
                             case DialogInterface.BUTTON_POSITIVE:
                                 AccessDB.deleteNote(positionToId.get(position));
-                                arrayAdapter.clear();
-                                arrayAdapter.addAll(AccessDB.returnAllNotes());
+                                noteAdapter.clear();
+                                noteAdapter.addAll(AccessDB.returnAllNotes());
                                 break;
                             case DialogInterface.BUTTON_NEGATIVE:
                                 break;
@@ -138,7 +136,7 @@ public class NotesList extends AppCompatActivity {
         }catch(ExecutionException e){
             Log.e("On Activity resume", "ExecutionException fired : " + e.toString());
         }
-        listView.setAdapter(arrayAdapter);
+        listView.setAdapter(noteAdapter);
     }
 
     private void trigerActivity(Class activityClass) {

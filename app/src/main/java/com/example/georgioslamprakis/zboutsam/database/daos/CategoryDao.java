@@ -27,6 +27,7 @@ public interface CategoryDao {
     @Delete
     void delete(Category... category);
 
+
     @Query("SELECT * FROM category")
     List<Category> getAllCategories();
 
@@ -35,6 +36,10 @@ public interface CategoryDao {
 
     @Query("SELECT id FROM category WHERE title=:title")
     int findIdByCategoryTitle(String title);
+
+    @Query("DELETE FROM category WHERE title = :title")
+    void deleteByTitle(String title);
+
 
 
 }

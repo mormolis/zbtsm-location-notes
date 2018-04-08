@@ -5,8 +5,10 @@ import android.util.Log;
 import com.example.georgioslamprakis.zboutsam.ZbtsmApp;
 import com.example.georgioslamprakis.zboutsam.database.daos.CategoryDao;
 import com.example.georgioslamprakis.zboutsam.database.daos.NoteDao;
+import com.example.georgioslamprakis.zboutsam.database.entities.Category;
 import com.example.georgioslamprakis.zboutsam.database.entities.Note;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -140,6 +142,39 @@ public class AccessDB {
             Log.e("AccessingDB", "Getting Category from id" + e.toString());
         }
         return categoryTitle;
+    }
+
+    public static List<String> getAllCategories(){
+        Callable<List<Category>> callable = new Callable<List<Category>>() {
+            @Override
+            public List<Category> call() throws Exception {
+                return categoryDao.getAllCategories();
+            }
+        };
+
+        Future<List<Category>> categoryListFuture = executor.submit(callable);
+        List<Category> categoryList;
+        List<String> categoryListTitles = new ArrayList<>();
+        try{
+            categoryList = categoryListFuture.get();
+            for (Category category : categoryList){
+                categoryListTitles.add(category.getTitle());
+            }
+            return categoryListTitles;
+        }catch (Exception e){
+            Log.e("getAllCategoriesAccsDB", e.toString());
+        }
+        return null;
+    }
+
+    public static void deleteCategoryByTitle(final String categoryTitle){
+        executor.submit(new Runnable() {
+            @Override
+            public void run() {
+                categoryDao.deleteByTitle(categoryTitle);
+
+            }
+        });
     }
 
 
