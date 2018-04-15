@@ -72,7 +72,7 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_note);
         populateSpinner();
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(this);
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(AddNote.this);
         Bundle b = getIntent().getExtras();
         int value = -1; // or other values
         if (b != null) {
@@ -214,9 +214,8 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
                 getAccessLocationPermission();
                 return true;
             case R.id.showOnMapMenu:
-//                intent = new Intent(this, AddCategories.class);
-//                startActivity(intent);
-                // create a map activity pointing to the location of the note if it has one
+                intent = new Intent(this, MapsActivity.class);
+                startActivity(intent);
                 return true;
             default:
                 return super.onOptionsItemSelected(item);
