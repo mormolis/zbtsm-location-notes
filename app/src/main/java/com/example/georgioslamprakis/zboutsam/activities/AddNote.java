@@ -214,8 +214,15 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
                 getAccessLocationPermission();
                 return true;
             case R.id.showOnMapMenu:
-                intent = new Intent(this, MapsActivity.class);
-                startActivity(intent);
+                if (note.getZbtsmLocation() != null){
+                    Bundle b = new Bundle();
+                    b.putInt("id", note.getId());
+                    intent = new Intent(this, MapsActivity.class);
+                    intent.putExtras(b);
+                    startActivity(intent);
+                } else {
+                    Toast.makeText(this, "There is no location to view", Toast.LENGTH_SHORT).show();
+                }
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

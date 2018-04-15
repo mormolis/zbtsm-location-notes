@@ -1,9 +1,17 @@
 package com.example.georgioslamprakis.zboutsam.activities;
 
+import android.content.Intent;
+import android.net.Uri;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Toast;
 
 import com.example.georgioslamprakis.zboutsam.R;
+import com.example.georgioslamprakis.zboutsam.database.entities.Note;
+import com.example.georgioslamprakis.zboutsam.database.entities.helpers.ZbtsmLocation;
+import com.example.georgioslamprakis.zboutsam.helpers.AccessDB;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
@@ -11,9 +19,14 @@ import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 
+import java.util.Locale;
+
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+    private static final float MAP_ZOOM = 15f;
 
     private GoogleMap mMap;
+    private Bundle b;
+    private Note note;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,6 +36,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        b = getIntent().getExtras();
     }
 
 
@@ -37,11 +51,26 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
      */
     @Override
     public void onMapReady(GoogleMap googleMap) {
+
         mMap = googleMap;
 
-        // Add a marker in Sydney and move the camera
-        LatLng sydney = new LatLng(-34, 151);
-        mMap.addMarker(new MarkerOptions().position(sydney).title("Marker in Sydney"));
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(sydney));
+        int value = -1;
+        if (b != null) {
+            value = b.getInt("id");
+        }
+        if (value!=-1){
+            note = AccessDB.returnNoteByID(value);
+            ZbtsmLocation location = note.getZbtsmLocation();
+            LatLng latLng = new LatLng(location.getLat(),location.getLng());
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(latLng, MAP_ZOOM));
+            MarkerOptions markerOptions = new MarkerOptions().position(latLng).title(note.getTitle() + " | " + note.getSummary());
+            mMap.addMarker(markerOptions);
+        }
+    }
+
+    private void openInGoogleMaps(ZbtsmLocation zbtsmLocation){
+        String uri = String.format(Locale.ENGLISH, "geo:%f,%f", zbtsmLocation.getLat(), zbtsmLocation.getLng());
+        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(uri));
+        startActivity(intent);
     }
 }

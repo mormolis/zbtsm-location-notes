@@ -26,7 +26,7 @@ public class AccessDB {
     private static ZbtsmApp app = ZbtsmApp.get();
     private static NoteDao noteDao = app.getDB().noteDao();
     private static CategoryDao categoryDao = app.getDB().categoryDao();
-    private static ExecutorService executor = Executors.newFixedThreadPool(2);
+    private static ExecutorService executor = Executors.newFixedThreadPool(4);
 
     public static List<Note> returnAllNotes(){
         Callable<List<Note>> getAllNotesFromDb = new Callable<List<Note>>() {
