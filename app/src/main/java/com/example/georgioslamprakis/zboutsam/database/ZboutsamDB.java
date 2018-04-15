@@ -16,7 +16,8 @@ import com.example.georgioslamprakis.zboutsam.database.entities.helpers.Converte
 /**
  * Created by georgioslamprakis on 10/03/2018.
  */
-@Database(entities = {Category.class, Note.class}, version = 3)
+//TODO: set export schema to true and create a json file representiong the schema
+@Database(entities = {Category.class, Note.class}, version = 3, exportSchema = false)
 @TypeConverters({Converters.class})
 public abstract class ZboutsamDB extends RoomDatabase {
     public abstract NoteDao noteDao();

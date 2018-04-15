@@ -31,7 +31,6 @@ public class ZbtsmApp extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        Log.i("from application class", "IRHIXA BREEE!");
         database = Room.databaseBuilder(getApplicationContext(), ZboutsamDB.class, DATABASE_NAME)
                 .build();
         createCategoryIfEmpty();

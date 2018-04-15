@@ -7,6 +7,7 @@ import com.example.georgioslamprakis.zboutsam.database.daos.CategoryDao;
 import com.example.georgioslamprakis.zboutsam.database.daos.NoteDao;
 import com.example.georgioslamprakis.zboutsam.database.entities.Category;
 import com.example.georgioslamprakis.zboutsam.database.entities.Note;
+import com.example.georgioslamprakis.zboutsam.database.entities.helpers.ZbtsmLocation;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -175,6 +176,22 @@ public class AccessDB {
 
             }
         });
+    }
+
+    public static ZbtsmLocation getNotesLocation(final int id){
+        Callable<ZbtsmLocation> callable = new Callable<ZbtsmLocation>() {
+            @Override
+            public ZbtsmLocation call() throws Exception {
+                return noteDao.getNotesLocation(id);
+            }
+        };
+        Future<ZbtsmLocation> zbtsmLocationFuture = executor.submit(callable);
+        try{
+            return zbtsmLocationFuture.get();
+        } catch (Exception e){
+            Log.e("retirevingLocation", e.toString());
+        }
+        return null;
     }
 
 

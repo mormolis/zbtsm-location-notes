@@ -7,6 +7,7 @@ import android.arch.persistence.room.Query;
 import android.arch.persistence.room.Update;
 
 import com.example.georgioslamprakis.zboutsam.database.entities.Note;
+import com.example.georgioslamprakis.zboutsam.database.entities.helpers.ZbtsmLocation;
 
 import java.util.List;
 
@@ -40,7 +41,7 @@ public interface NoteDao {
     @Query("DELETE FROM note WHERE id = :id")
     void deleteById(final int id);
 
-
-
+    @Query("SELECT zbtsmLocation FROM note WHERE id = :id")
+    ZbtsmLocation getNotesLocation(final int id);
 }
 
