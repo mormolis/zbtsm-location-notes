@@ -214,7 +214,9 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
                 getAccessLocationPermission();
                 return true;
             case R.id.showOnMapMenu:
-                if (note.getZbtsmLocation() != null){
+                if (zbtsmLocation !=null && note.getZbtsmLocation() == null){
+                    Toast.makeText(this, "Please save the note before trying to view the map", Toast.LENGTH_SHORT).show();
+                }else if (note.getZbtsmLocation() != null){
                     Bundle b = new Bundle();
                     b.putInt("id", note.getId());
                     intent = new Intent(this, MapsActivity.class);
@@ -297,7 +299,7 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
                                 Toast.makeText(AddNote.this , "Cannot retrieve location", Toast.LENGTH_SHORT).show();
                             }
                         } else {
-                            Log.i("getLocation - >", "onComplete Cound NOT find Location");
+                            Log.i("getLocation - >", "onComplete Could NOT find Location");
                         }
                     }
                 });
