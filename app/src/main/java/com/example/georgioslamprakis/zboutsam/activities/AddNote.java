@@ -235,18 +235,12 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
                 Manifest.permission.ACCESS_FINE_LOCATION)
                 != PackageManager.PERMISSION_GRANTED) {
             Toast.makeText(this, "You wont be able to store the location without giving permission", Toast.LENGTH_LONG).show();
-            // Permission is not granted
-            // Should we show an explanation?
             if (ActivityCompat.shouldShowRequestPermissionRationale(this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
                 Toast.makeText(this, "You wont be able to store the location without giving permission", Toast.LENGTH_LONG).show();
                 ActivityCompat.requestPermissions(this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         ZBTSM_PERMISSIONS_REQUEST_READ_LOCATION);
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
             } else {
                 // No explanation needed; request the permission
                 ActivityCompat.requestPermissions(this,
@@ -257,10 +251,9 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
                 // result of the request.
             }
         } else {
-            // Permission has already been granted
             locationPermissionGranded = true;
             if (zbtsmLocation == null) {
-                Toast.makeText(this, "Im null", Toast.LENGTH_SHORT).show();
+                Toast.makeText(this, "...trying to retrieve location", Toast.LENGTH_SHORT).show();
                 getAndSaveLocation();
             } else {
                 DialogInterface.OnClickListener dialogClickListener = new DialogInterface.OnClickListener() {
@@ -298,10 +291,10 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
                             Location location = (Location)task.getResult();
                             Log.i("getLocation - >", "onComplete Location Found");
                             if (location != null) {
-                                Toast.makeText(AddNote.this , location.getLatitude() + " - " + location.getLongitude(), Toast.LENGTH_SHORT).show();
+                                Toast.makeText(AddNote.this , "Locations has been retrieved successfully", Toast.LENGTH_SHORT).show();
                                 zbtsmLocation = new ZbtsmLocation( location.getLatitude(),  location.getLongitude());
                             } else {
-                                Toast.makeText(AddNote.this , "location null...", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(AddNote.this , "Cannot retrieve location", Toast.LENGTH_SHORT).show();
                             }
                         } else {
                             Log.i("getLocation - >", "onComplete Cound NOT find Location");
@@ -310,7 +303,7 @@ public class AddNote extends AppCompatActivity implements AdapterView.OnItemSele
                 });
             }
         }catch(SecurityException e){
-            Log.e("getLocationSecurityExc", e.toString());
+            Log.e("getLocationSecurityExc", e.getMessage());
         }
     }
 }
